@@ -8,6 +8,7 @@ import About from "./pages/common/About";
 import NotFound from "./pages/common/NotFound";
 import Login from "./pages/common/Login";
 import Events from "./pages/common/Events";
+import Dashboard from "./pages/common/Dashboard";
 
 const root = ReactDOM.createRoot(document.querySelector("#root"));
 
@@ -27,6 +28,10 @@ const router = createBrowserRouter([
       {
         path: "/auth/login",
         element: <Login />,
+      },
+      {
+        path: "/dashboard",
+        element: <Dashboard />,
       },
       {
         path: "/events/",
