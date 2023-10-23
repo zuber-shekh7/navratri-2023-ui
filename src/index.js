@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import { Provider } from "react-redux";
 
 import App from "./App";
 import Home from "./pages/common/Home";
@@ -9,6 +10,7 @@ import NotFound from "./pages/common/NotFound";
 import Login from "./pages/common/Login";
 import Events from "./pages/common/Events";
 import Dashboard from "./pages/common/Dashboard";
+import { store } from "./redux/store";
 
 const root = ReactDOM.createRoot(document.querySelector("#root"));
 
@@ -45,4 +47,8 @@ const router = createBrowserRouter([
   },
 ]);
 
-root.render(<RouterProvider router={router} />);
+root.render(
+  <Provider store={store}>
+    <RouterProvider router={router} />
+  </Provider>
+);
