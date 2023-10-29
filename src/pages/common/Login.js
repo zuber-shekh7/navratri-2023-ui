@@ -1,9 +1,70 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+
+import { useSendOtpMutation, useVerifyOtpMutation } from "../../apis/authAPI";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [isOtpsent, setIsOtpSent] = useState(false);
   const [mobile, setMobile] = useState("");
   const [otp, setOtp] = useState("");
+
+  const navigate = useNavigate();
+
+  const [sendOtp, { isLoading, isFetching, isError, isSuccess }] =
+    useSendOtpMutation();
+
+  const [
+    verifyOtp,
+    {
+      isLoading: verifyOtpIsLoading,
+      isFetching: verifyOtpIsFetching,
+      isError: verifyOtpIsError,
+      isSuccess: verifyOtpIsSuccess,
+      data,
+    },
+  ] = useVerifyOtpMutation();
+
+  useEffect(() => {
+    if (isSuccess) {
+      toast.success("OTP sent successfully", {
+        position: "top-center",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: false,
+        theme: "light",
+      });
+      setIsOtpSent(true);
+    }
+  }, [isSuccess]);
+
+  useEffect(() => {
+    if (verifyOtpIsSuccess) {
+      toast.success("OTP verified successfully", {
+        position: "top-center",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: false,
+        theme: "light",
+      });
+    }
+    navigate("/dashboard");
+  }, [verifyOtpIsSuccess]);
+
+  const handleSendOtp = async () => {
+    await sendOtp({ mobileNumber: `+91${mobile}` });
+  };
+
+  const handleVerifyOtp = async () => {
+    await verifyOtp({ otp, mobileNumber: `+91${mobile}` });
+  };
+
+  const showLoader =
+    isLoading || isFetching || verifyOtpIsLoading || verifyOtpIsLoading;
 
   return (
     <section className="flex justify-center">
@@ -43,12 +104,20 @@ const Login = () => {
           )}
           <div className="flex flex-col gap-y-2 mt-5">
             <button
-              className="py-2 px-4 bg-blue-500 text-white  font-bold rounded-lg shadow-sm border"
-              type="text"
+              className="flex items-center justify-center gap-x-5 py-2 px-4 bg-blue-500 text-white  font-bold rounded-lg shadow-sm border"
+              type="button"
               placeholder="123456"
               id="otp"
-              onClick={() => setIsOtpSent(!isOtpsent)}
+              onClick={isOtpsent ? handleVerifyOtp : handleSendOtp}
             >
+              {showLoader && (
+                <>
+                  <svg
+                    class="animate-ping h-4 w-4 rounded-full border-2 border-white "
+                    viewBox="0 0 24 24"
+                  ></svg>{" "}
+                </>
+              )}
               {isOtpsent ? "Verify OTP" : "Send OTP"}
             </button>
           </div>
