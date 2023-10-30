@@ -14,6 +14,7 @@ import Dashboard from "../src/pages/common/Dashboard";
 import Events from "../src/pages/common/Events";
 import NotFound from "../src/pages/common/NotFound";
 import About from "../src/pages/common/About";
+import ProtectedRoute from "./components/common/ProtectedRoute";
 
 const App = () => {
   return (
@@ -23,11 +24,13 @@ const App = () => {
         <ToastContainer />
 
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/auth/login" element={<Login />} />
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route exact path="/" element={<Home />} />
+          <Route exact path="/auth/login" element={<Login />} />
+          <Route exact path="/dashboard" element={<ProtectedRoute />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+          </Route>
           <Route path="/events" element={<Events />} />
-          <Route path="/about" element={<Events />} />
+          <Route path="/about" element={<About />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>

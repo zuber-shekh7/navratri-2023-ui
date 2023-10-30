@@ -1,23 +1,21 @@
 import React from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
-import { login, logout } from "../../redux/reducers/authReducer";
+import { Link, useNavigate } from "react-router-dom";
+
+import useAuth from "../../utils/hooks/useAuth";
+import { toast } from "react-toastify";
 
 const Header = () => {
-  const { isAuthenticated } = useSelector((state) => state.auth);
+  const { user, isAuthenticated, logout } = useAuth();
+  const navigate = useNavigate();
 
-  const dispatch = useDispatch();
-
-  const handleClick = () => {
-    if (isAuthenticated) {
-      dispatch(logout());
-    } else {
-      dispatch(login());
-    }
+  const handleLogout = () => {
+    logout();
+    toast.success("Logged out successfully.");
+    navigate("/auth/login");
   };
 
   return (
-    <nav className="bg-red-500 py-4 px-10 opacity">
+    <nav className="bg-black py-6 px-10 shadow-lg">
       <div className="mx-auto">
         <div className="flex justify-between items-center">
           <div className="">
@@ -26,21 +24,34 @@ const Header = () => {
             </h1>
           </div>
           <div>
-            <ul className="flex justify-around items-center gap-x-2 text-white uppercase font-semibold">
+            <ul className="flex justify-around items-center gap-x-2 uppercase font-bold text-white">
               <li>
                 <Link to="/">Home</Link>
               </li>
               <li>
                 <Link to="/events">Events</Link>
               </li>
-              <li>
-                <button onClick={handleClick} to="/auth/login">
-                  {isAuthenticated ? "LOGOUT" : "LOGIN"}
-                </button>
-              </li>
-              <li>
-                <Link to="/dashboard">User</Link>
-              </li>
+
+              {isAuthenticated ? (
+                <>
+                  <li>
+                    <Link to="/dashboard">{user.firstName}</Link>
+                  </li>
+                  <li>
+                    <button
+                      onClick={handleLogout}
+                      className="uppercase"
+                      to="/dashboard"
+                    >
+                      Logout
+                    </button>
+                  </li>
+                </>
+              ) : (
+                <li>
+                  <Link to="/auth/login">Login</Link>
+                </li>
+              )}
             </ul>
           </div>
         </div>

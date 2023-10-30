@@ -3,13 +3,18 @@ import React, { useEffect, useState } from "react";
 import { useSendOtpMutation, useVerifyOtpMutation } from "../../apis/authAPI";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { login } from "../../redux/reducers/authReducer";
+import { useDispatch } from "react-redux";
+import useLocalStorage from "../../utils/hooks/useLocalStorage";
 
 const Login = () => {
   const [isOtpsent, setIsOtpSent] = useState(false);
   const [mobile, setMobile] = useState("");
   const [otp, setOtp] = useState("");
+  const { setItem } = useLocalStorage();
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const [sendOtp, { isLoading, isFetching, isError, isSuccess }] =
     useSendOtpMutation();
@@ -41,7 +46,7 @@ const Login = () => {
   }, [isSuccess]);
 
   useEffect(() => {
-    if (verifyOtpIsSuccess) {
+    if (verifyOtpIsSuccess && data) {
       toast.success("OTP verified successfully", {
         position: "top-center",
         autoClose: 2000,
@@ -51,8 +56,14 @@ const Login = () => {
         draggable: false,
         theme: "light",
       });
+
+      dispatch(login({ token: data.data.token, user: data.data.user }));
+      setItem("token", data.data.token);
+      setItem("user", JSON.stringify(data.data.user));
+      navigate("/dashboard");
+    } else if (verifyOtpIsError) {
+      toast.failed("OTP verification failed");
     }
-    navigate("/dashboard");
   }, [verifyOtpIsSuccess]);
 
   const handleSendOtp = async () => {
